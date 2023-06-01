@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper	namespace="mapper.board">
+	
+	<select id="list2" resultType="com.mycgv_jsp.vo.BoardVo">
+		SELECT ROWNUM RNO, BID, BTITLE, BCONTENT, BHITS, ID, to_char(BDATE, 'yyyy-mm-dd') BDATE
+					   FROM(SELECT BID, BTITLE, BCONTENT,BHITS, ID, BDATE FROM MYCGV_BOARD 
+					   ORDER BY BDATE DESC)
+	</select>
+	
+	<update id="updateHits" parameterType="String">
+		update mycgv_board set bhits = bhits+1 where bid=#{bid}
+	</update>
+	
+	<delete id="delete" parameterType="String">
+		delete from mycgv_board where bid=#{bid}
+	</delete>
+	
+	<update id="update" parameterType="com.mycgv_jsp.vo.BoardVo">
+		update mycgv_board set btitle=#{btitle}, bcontent=#{bcontent} where bid=#{bid}
+	</update>
+	
+	<select id="content" parameterType="java.lang.String" resultType="com.mycgv_jsp.vo.BoardVo">
+		SELECT BID, BTITLE, BCONTENT, BHITS, ID, BDATE, BFILE, BSFILE FROM MYCGV_BOARD WHERE BID = #{bid}
+	</select>
+	
+	<insert id="insert" parameterType="com.mycgv_jsp.vo.BoardVo">
+		insert into mycgv_board(bid, btitle, bcontent, bhits, id, bdate, bfile, bsfile) 
+					 values('b_'||LTRIM(to_char(sequ_mycgv_board.nextval,'0000')),
+					 		#{btitle},#{bcontent},0,#{id},sysdate,#{bfile, jdbcType=VARCHAR},#{bsfile, jdbcType=VARCHAR})
+	</insert>
+	
+	
+	<select id="list" parameterType="map" resultType="com.mycgv_jsp.vo.BoardVo">
+		SELECT RNO, BID, BTITLE, BCONTENT, BHITS, ID, BDATE
+					 	FROM(SELECT ROWNUM RNO, BID, BTITLE, BCONTENT, BHITS, ID, to_char(BDATE, 'yyyy-mm-dd') BDATE 
+				       	 FROM(SELECT BID, BTITLE, BCONTENT,BHITS, ID, BDATE FROM MYCGV_BOARD
+					   	 	  ORDER BY BDATE DESC))
+					 	WHERE RNO BETWEEN #{start} AND #{end}
+	</select>
+	
+</mapper>

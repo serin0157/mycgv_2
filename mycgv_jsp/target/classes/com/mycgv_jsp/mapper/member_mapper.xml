@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <mapper namespace="mapper.member">
+ 	
+ 	<!-- resultType을 넣었을 시  -->
+ 	<select id="idcheck" parameterType="String" resultType="int">
+ 		select count(*) from mycgv_member where id = #{id}
+ 	</select> 
+ 
+ 	<select id="list" parameterType="map" resultType="com.mycgv_jsp.vo.MemberVo">
+ 		SELECT RNO, ID, NAME, MDATE, GRADE
+					 	FROM(SELECT ROWNUM RNO, ID, NAME, to_char(MDATE, 'yyyy-mm-dd') MDATE, GRADE 
+				       	 	 FROM(SELECT ID, NAME, MDATE, GRADE FROM MYCGV_MEMBER
+					   	 	 	  ORDER BY MDATE DESC))
+					 	WHERE RNO BETWEEN #{start} AND #{end}
+ 	</select>
+ 	
+ 	<insert id="join" parameterType="com.mycgv_jsp.vo.MemberVo">
+ 		insert into 
+ 			mycgv_member (id, pass, name, gender, email, addr, tel, pnumber, hobbylist, intro, mdate, grade)
+						 values(#{id}, #{pass}, #{name}, #{gender}, #{email}, #{addr}, #{tel}, #{pnumber},
+						 		#{hobbyList}, #{intro}, sysdate, 'GOLD')
+ 	</insert>
+ 
+ 	<select id="login" parameterType="com.mycgv_jsp.vo.MemberVo" resultType="int">
+	 	SELECT COUNT(*) FROM MYCGV_MEMBER WHERE ID=#{id} AND PASS=#{pass}
+ 	</select>
+ </mapper>
